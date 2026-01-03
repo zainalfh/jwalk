@@ -21,26 +21,31 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+    <!-- Scripts -->
+    <script src="js/i18n.js"></script>
+    <script src="app.js" defer></script>
 </head>
 
 <body>
     <div id="app">
-        <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
-            🌞
-        </button>
+        <div class="top-controls">
+            <button id="lang-toggle" class="control-btn" aria-label="Toggle Language">ID</button>
+            <button id="theme-toggle" class="control-btn" aria-label="Toggle Theme">🌞</button>
+        </div>
+
         <!-- Navigation -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-target="education">
                 <span class="icon">📖</span>
-                <span class="label">Learn</span>
+                <span class="label" data-i18n="nav.learn">Learn</span>
             </button>
             <button class="nav-btn" data-target="exercise">
                 <span class="icon">🏃</span>
-                <span class="label">Exercise</span>
+                <span class="label" data-i18n="nav.exercise">Exercise</span>
             </button>
             <button class="nav-btn" data-target="history">
                 <span class="icon">📅</span>
-                <span class="label">History</span>
+                <span class="label" data-i18n="nav.history">History</span>
             </button>
         </nav>
 
@@ -50,8 +55,8 @@
             <section id="education" class="view active">
                 <header class="hero">
                     <img src="img/icon-192.png" alt="JWalk Logo" class="brand-logo">
-                    <h1>JWalk</h1>
-                    <p class="subtitle">Japanese Walk Exercise</p>
+                    <h1 data-i18n="hero.title">JWalk</h1>
+                    <p class="subtitle" data-i18n="hero.subtitle">Japanese Walk Exercise</p>
                 </header>
 
                 <div class="card-container">
@@ -68,45 +73,29 @@
                             capacity, weight loss, lower blood pressure, and stronger thigh muscles.</p>
                     </div>
 
+                    <!-- How to Practice -->
+                    <div class="card">
+                        <h2 data-i18n="card.how">📋 How to Practice</h2>
+
+                        <div class="step-visual">
+                            <h3 data-i18n="routine.title">The Routine</h3>
+                            <p data-i18n="routine.fast"><strong>3 Mins Fast</strong> (Long strides, arm swings)</p>
+                            <p>⬇️</p>
+                            <p data-i18n="routine.slow"><strong>3 Mins Slow</strong> (Relaxed pace)</p>
+                            <p data-i18n="routine.repeat">🔄 Repeat 5 times (30 mins total)</p>
+                        </div>
+
+                        <ul class="instruction-list">
+                            <li data-i18n="practice.step1"><strong>FAST Walking (3 mins):</strong> Walk briskly.</li>
+                            <li data-i18n="practice.step2"><strong>SLOW Walking (3 mins):</strong> Walk leisurely.</li>
+                            <li data-i18n="practice.step3">Repeat for 5 sets (30 mins total).</li>
+                        </ul>
+                    </div>
+
                     <!-- Video -->
                     <div class="card">
-                        <h2>📺 Watch the Explanation</h2>
+                        <h2 data-i18n="card.watch">📺 Watch the Explanation</h2>
                         <div class="video-container">
-                            <div class="video-container">
-                                <iframe width="560" height="315"
-                                    src="https://www.youtube.com/embed/K7Ehvq-bm6I?si=lN9slMTK2BvtNkOY"
-                                    title="YouTube video player" frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                            </div>
-                        </div>
-
-                        <!-- Benefits -->
-                        <div class="card">
-                            <h2>✨ Key Benefits</h2>
-                            <ul class="benefit-list">
-                                <li><strong>Weight Loss & Blood Pressure:</strong> Studies show participants using this
-                                    method lost more weight and reduced blood pressure more than those doing continuous
-                                    moderate walking toward 8,000 steps daily.</li>
-                                <li><strong>Cardiovascular Health:</strong> Boosts cardiovascular health, fat
-                                    metabolism,
-                                    leg strength by up to 17%, and overall fitness by 20% with consistent practice.</li>
-                                <li><strong>Low Impact:</strong> Accessible and easy on joints while improving posture,
-                                    reducing stress, and supporting immunity through mindful core engagement.</li>
-                            </ul>
-                        </div>
-
-                        <!-- Practice -->
-                        <div class="card">
-                            <h2>👟 How to Practice</h2>
-
-                            <div class="step-visual">
-                                <h3>The Routine</h3>
-                                <p><strong>3 Mins Fast</strong> (Long strides, arm swings)</p>
-                                <p>⬇️</p>
-                                <p><strong>3 Mins Slow</strong> (Relaxed pace)</p>
-                                <p>🔄 Repeat 5 times (30 mins total)</p>
-                            </div>
                             <p>Sessions can be split into shorter bouts (e.g., 10 mins x 3 times daily).</p>
                         </div>
 
@@ -142,27 +131,27 @@
             <!-- Exercise View -->
             <section id="exercise" class="view hidden">
                 <div class="timer-display">
-                    <div class="mode-indicator" id="mode-label">Ready</div>
-                    <div class="time-big" id="timer">30:00</div>
-                    <div class="interval-info" id="interval-status">Session Start</div>
+                    <div id="mode-label" class="mode-indicator" data-i18n="mode.ready">Ready</div>
+                    <div id="timer" class="time-big">00:00</div>
+                    <div id="interval-info" class="interval-info"></div>
                 </div>
 
                 <div class="stats-grid">
                     <div class="stat-box">
-                        <span class="stat-label">Steps</span>
-                        <span class="stat-value" id="step-count">0</span>
+                        <span class="stat-label" data-i18n="stat.steps">Step Count</span>
+                        <span id="step-count" class="stat-value">0</span>
                     </div>
                     <div class="stat-box">
-                        <span class="stat-label">Phase</span>
-                        <span class="stat-value" id="phase-counter">1/1</span>
+                        <span class="stat-label" data-i18n="stat.phase">Phase</span>
+                        <span id="phase-counter" class="stat-value">-</span>
                     </div>
                 </div>
 
                 <div class="controls">
-                    <button id="btn-start" class="btn-primary">Start Session</button>
                     <button id="btn-sound-toggle" class="btn-icon" aria-label="Toggle Sound">
                         🔊
                     </button>
+                    <button id="btn-start" class="btn-primary" data-i18n="btn.start">Start Session</button>
                 </div>
             </section>
 

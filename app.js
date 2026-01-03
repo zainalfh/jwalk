@@ -114,7 +114,8 @@ class AudioManager {
 }
 
 class ExerciseManager {
-    constructor(audio, ui, pedometer, history) {
+    constructor(app, audio, ui, pedometer, history) {
+        this.app = app; // Access to i18n
         this.audio = audio;
         this.ui = ui;
         this.pedometer = pedometer;
@@ -140,14 +141,15 @@ class ExerciseManager {
 
     start() {
         this.audio.init();
-        this.state = 'SLOW';
+        // Updated: Start with FAST
+        this.state = 'FAST';
         this.sessionStartTime = new Date(); // Track start time
         this.secondsRemaining = this.totalDuration;
-        this.intervalSecondsRemaining = this.intervals.SLOW;
+        this.intervalSecondsRemaining = this.intervals.FAST;
         this.currentPhase = 1;
         this.currentSteps = 0;
 
-        this.ui.updateMode('SLOW');
+        this.ui.updateMode('FAST');
         this.ui.updateTimer(this.intervalSecondsRemaining); // Show interval time or total? Let's show interval.
         this.ui.updateStats(0, this.currentPhase);
 
@@ -217,12 +219,12 @@ class ExerciseManager {
 
     switchPhase() {
         this.audio.playTransition();
-        if (this.state === 'SLOW') {
-            this.state = 'FAST';
-            this.intervalSecondsRemaining = this.intervals.FAST;
-        } else {
+        if (this.state === 'FAST') {
             this.state = 'SLOW';
             this.intervalSecondsRemaining = this.intervals.SLOW;
+        } else {
+            this.state = 'FAST';
+            this.intervalSecondsRemaining = this.intervals.FAST;
         }
         this.currentPhase++;
         this.ui.updateMode(this.state);
@@ -243,7 +245,7 @@ class ExerciseManager {
             steps: this.currentSteps,
             completed: true
         });
-        alert(`Session Complete! You walked ${this.currentSteps} steps in ${durationMinutes} minutes.`);
+        alert(this.app.i18n.t('alert.complete', { steps: this.currentSteps, duration: durationMinutes }));
     }
 }
 
@@ -338,6 +340,7 @@ class HistoryManager {
 
 class App {
     constructor() {
+        this.i18n = new LocalizationManager(); // Init i18n
         this.audio = new AudioManager();
         this.pedometer = new StepCounter();
         this.history = new HistoryManager();
@@ -351,17 +354,17 @@ class App {
                 label.classList.remove('exercise-mode-slow', 'exercise-mode-fast');
 
                 if (mode === 'SLOW') {
-                    label.textContent = "Slow Walking";
+                    label.textContent = this.i18n.t('mode.slow');
                     label.classList.add('exercise-mode-slow');
                     body.classList.add('bg-slow');
                 } else if (mode === 'FAST') {
-                    label.textContent = "Fast Walking";
+                    label.textContent = this.i18n.t('mode.fast');
                     label.classList.add('exercise-mode-fast');
                     body.classList.add('bg-fast');
                 } else if (mode === 'FINISHED') {
-                    label.textContent = "Finished";
+                    label.textContent = this.i18n.t('mode.finished');
                 } else {
-                    label.textContent = "Ready";
+                    label.textContent = this.i18n.t('mode.ready');
                 }
             },
             updateTimer: (sec) => {
@@ -375,8 +378,8 @@ class App {
             }
         };
 
-        // Inject dependencies including pedometer and history
-        this.exercise = new ExerciseManager(this.audio, this.ui, this.pedometer, this.history);
+        // Inject dependencies including pedometer and history AND app (for i18n)
+        this.exercise = new ExerciseManager(this, this.audio, this.ui, this.pedometer, this.history);
 
         this.initListeners();
         this.router = new Router(this);
@@ -387,8 +390,12 @@ class App {
         // Theme initialization
         this.initTheme();
 
+        // Lang initialization
+        this.updateLangButton();
+
         // Listeners
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+        document.getElementById('lang-toggle').addEventListener('click', () => this.toggleLang());
     }
 
     initTheme() {
@@ -404,6 +411,32 @@ class App {
         const isLight = document.body.classList.contains('light-mode');
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         document.getElementById('theme-toggle').textContent = isLight ? '🌙' : '🌞';
+    }
+
+    toggleLang() {
+        const newLang = this.i18n.toggleLanguage();
+        this.updateLangButton();
+        // Force update UI text that might depend on state
+        if (this.exercise.state !== 'IDLE') {
+            this.ui.updateMode(this.exercise.state);
+        } else {
+            this.ui.updateMode('IDLE');
+        }
+
+        // Update Buttons dynamic text
+        const btnStart = document.getElementById('btn-start');
+        if (this.exercise.state === 'IDLE' || this.exercise.state === 'FINISHED') {
+            btnStart.textContent = this.i18n.t('btn.start');
+        } else {
+            btnStart.textContent = this.i18n.t('btn.stop');
+        }
+    }
+
+    updateLangButton() {
+        // Show the info of the NEXT lang to switch to, or current? Usually shows current. 
+        // User asked for "EN" and "ID" switch.
+        // Let's show current lang.
+        document.getElementById('lang-toggle').textContent = this.i18n.lang.toUpperCase();
     }
 
     initListeners() {
@@ -427,11 +460,11 @@ class App {
             const btn = document.getElementById('btn-start');
             if (this.exercise.state === 'IDLE' || this.exercise.state === 'FINISHED') {
                 this.exercise.start();
-                btn.textContent = "Stop Session";
+                btn.textContent = this.i18n.t('btn.stop');
                 btn.style.background = "#ff6b6b";
             } else {
                 this.exercise.stop();
-                btn.textContent = "Start Session";
+                btn.textContent = this.i18n.t('btn.start');
                 btn.style.background = ""; // reset
             }
         });
