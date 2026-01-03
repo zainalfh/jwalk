@@ -1,8 +1,10 @@
-# Jwalk - Japanese Walking App 🇯🇵🚶
-
-**Live Demo:** [https://jwalk.netlify.app/](https://jwalk.netlify.app/)
+# JWalk - Japanese Walking App 🇯🇵🚶
 
 A Progressive Web App (PWA) designed to guide users through the **Japanese Walking Method** (Interval Walking Training - IWT), a scientific approach to boost metabolism, cardiovascular health, and leg strength.
+
+## ✅ Live Demo:
+* [https://zainalfh.github.io/jwalk/](https://zainalfh.github.io/jwalk/)
+* [https://jwalk.netlify.app/](https://jwalk.netlify.app/)
 
 ## 🌟 Features
 
